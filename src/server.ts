@@ -9,7 +9,7 @@ import database from './database';
 import config from './config';
 import { start } from './bot';
 import slack from './slack';
-import RTMHandler from './slack/Rtm';
+import Events from './slack/Events';
 import WBCHandler from './slack/Wbc';
 import APIHandler from './api';
 import WEBHandler from './web';
@@ -26,11 +26,9 @@ init().then(() => {
     // Configure BurritoStore
     BurritoStore.setDatabase(database);
 
-    // Set and start slack services
-    const { rtm, wbc } = slack;
+    // Set up slack services
+    const { wbc } = slack;
 
-    rtm.start();
-    RTMHandler.register(rtm);
     WBCHandler.register(wbc);
 
     // Start bot instance
@@ -40,9 +38,48 @@ init().then(() => {
     LocalStore.start();
 
     /**
+     * Slack Events API webhook handler
+     */
+    const handleSlackEvents = (request: http.IncomingMessage, response: http.ServerResponse) => {
+        let body = '';
+        
+        request.on('data', chunk => {
+            body += chunk.toString();
+        });
+        
+        request.on('end', () => {
+            try {
+                const signature = request.headers['x-slack-signature'] as string;
+                const timestamp = request.headers['x-slack-request-timestamp'] as string;
+                
+                if (!Events.verifySlackRequest(body, signature, timestamp)) {
+                    response.writeHead(401);
+                    return response.end('Unauthorized');
+                }
+                
+                const payload = JSON.parse(body);
+                const result = Events.handleEvent(payload);
+                
+                response.writeHead(200, { 'Content-Type': 'application/json' });
+                response.end(JSON.stringify(result));
+            } catch (error) {
+                log.error('Error handling Slack event:', error);
+                response.writeHead(500);
+                response.end('Internal Server Error');
+            }
+        });
+    };
+
+    /**
      * Httpserver request handler
      */
     const requestHandler = (request: http.IncomingMessage, response: http.ServerResponse) => {
+        /**
+         * Handle Slack Events API webhook
+         */
+        if (request.url === '/slack/events' && request.method === 'POST') {
+            return handleSlackEvents(request, response);
+        }
         /**
          * Check if request url contains api path, then let APIHandler take care of it
          */

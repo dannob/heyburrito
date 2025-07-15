@@ -44,11 +44,45 @@ Check environment variables section.
 
 ### Get started
 
-1. Go to https://yourworkspace.slack.com/apps and search for Bots.  
-2. Add **Bots ( Connect a bot to the Slack Real Time Messaging API)**.  
-3. Give the bot a name, ex: heyburrito, and obtain apiToken.  
-4. Choose how to run it => See Docker or Node section .
-5. Invite the new bot to your slack channels ( where u want to be able to send burritos ).
+1. Go to https://api.slack.com/apps and click **Create New App**.
+2. Choose **From an app manifest** and select your workspace.
+3. Use this app manifest (replace YOUR_DOMAIN with your server's domain):
+```json
+{
+  "display_information": {
+    "name": "HeyBurrito",
+    "description": "A reward system for your team",
+    "background_color": "#4a154b"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "heyburrito",
+      "always_online": true
+    }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "channels:history",
+        "chat:write",
+        "users:read",
+        "app_mentions:read"
+      ]
+    }
+  },
+  "event_subscriptions": {
+    "request_url": "https://YOUR_DOMAIN/slack/events",
+    "bot_events": [
+      "message.channels",
+      "app_mention"
+    ]
+  }
+}
+```
+4. Install the app to your workspace and copy the **Bot User OAuth Token**.
+5. Copy the **Signing Secret** from Basic Information > App Credentials.
+6. Choose how to run it => See Docker or Node section.
+7. Invite the bot to your slack channels where you want to send burritos.
 
 ### Docker
 1. Open and edit `docker-compose.yml`.
@@ -75,7 +109,8 @@ Check environment variables section.
 | MONGODB_URL         |                                            | Yes*     | Only requierd if DATABASE_DRIVER is mongodb                       |
 | MONGODB_DATABASE    |                                            | Yes*     | Only requierd if DATABASE_DRIVER is mongodb                       |
 | DATABASE_URI        | MONGODB_URL/MONGODB_DATABASE               | No       | Only in use when DATABASE_DRIVER is mongodb                       |
-| SLACK_API_TOKEN     |                                            | Yes      | See Get started section                                           |
+| SLACK_API_TOKEN     |                                            | Yes      | Bot User OAuth Token from Slack app (starts with xoxb-)          |
+| SLACK_SIGNING_SECRET |                                           | Yes      | Signing Secret from Slack app for webhook verification           |
 | SLACK_EMOJI_INC     | :burrito:                                  | No       | Emoji to increment points. ex:( :burrito: )                       |
 | SLACK_EMOJI_DEC     | :rottenburrito:                            | No       | Emoji to decrement points. ex:( :rottenburrito: )                 |
 | SLACK_DAILY_CAP     | 5                                          | No       | Defaults to 5/day .                                               |
