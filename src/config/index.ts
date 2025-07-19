@@ -117,7 +117,7 @@ const config = {
             scoreRotation: getNum(process.env.SCORE_ROTATION, 500)
         },
         misc: {
-            slackMock: true,
+            slackMock: false,
             log_level: process.env.LOG_LEVEL || 'debug'
         },
     },

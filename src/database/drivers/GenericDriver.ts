@@ -76,7 +76,22 @@ class GenericDriver extends Store implements Driver {
         return filteredData;
     }
 
-    async getScoreBoard({ user, listType, today }): Promise<Sum[]> {
+    async findFromPeriod(user: string, listType: string, period: string = 'day'): Promise<Find[]> {
+        this.syncData();
+        const data: any = await this.getData();
+        const timeRange = time(period);
+        const filteredData = data.filter((item) => {
+            if (item[listType] === user
+                && item.given_at.getTime() < timeRange.end.getTime()
+                && item.given_at.getTime() > timeRange.start.getTime()) {
+                return item;
+            }
+            return undefined;
+        }).filter((y) => y);
+        return filteredData;
+    }
+
+    async getScoreBoard({ user, listType, today, period }): Promise<Sum[]> {
         this.syncData();
         const data: any = await this.getData();
 
@@ -86,10 +101,12 @@ class GenericDriver extends Store implements Driver {
         } else {
             listTypeSwitch = listType;
         }
+        
         const selected = data.filter((item: any) => {
-            if (today) {
-                if (item.given_at.getTime() < time().end.getTime()
-                    && item.given_at.getTime() > time().start.getTime()) {
+            if (today || period) {
+                const timeRange = period ? time(period) : time();
+                if (item.given_at.getTime() < timeRange.end.getTime()
+                    && item.given_at.getTime() > timeRange.start.getTime()) {
                     if (user) {
                         if (item[listTypeSwitch] === user) return item;
                     } else {

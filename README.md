@@ -46,43 +46,12 @@ Check environment variables section.
 
 1. Go to https://api.slack.com/apps and click **Create New App**.
 2. Choose **From an app manifest** and select your workspace.
-3. Use this app manifest (replace YOUR_DOMAIN with your server's domain):
-```json
-{
-  "display_information": {
-    "name": "HeyBurrito",
-    "description": "A reward system for your team",
-    "background_color": "#4a154b"
-  },
-  "features": {
-    "bot_user": {
-      "display_name": "heyburrito",
-      "always_online": true
-    }
-  },
-  "oauth_config": {
-    "scopes": {
-      "bot": [
-        "channels:history",
-        "chat:write",
-        "users:read",
-        "app_mentions:read"
-      ]
-    }
-  },
-  "event_subscriptions": {
-    "request_url": "https://YOUR_DOMAIN/slack/events",
-    "bot_events": [
-      "message.channels",
-      "app_mention"
-    ]
-  }
-}
-```
-4. Install the app to your workspace and copy the **Bot User OAuth Token**.
-5. Copy the **Signing Secret** from Basic Information > App Credentials.
-6. Choose how to run it => See Docker or Node section.
-7. Invite the bot to your slack channels where you want to send burritos.
+3. Copy the contents of `slack-app-manifest.json` and paste into the manifest editor.
+4. Replace `YOUR_DOMAIN.ngrok.io` with your actual domain (for local dev, use ngrok URL).
+5. Install the app to your workspace and copy the **Bot User OAuth Token**.
+6. Copy the **Signing Secret** from Basic Information > App Credentials.
+7. Choose how to run it => See Docker or Node section.
+8. Invite the bot to your slack channels where you want to send burritos.
 
 ### Docker
 1. Open and edit `docker-compose.yml`.
@@ -90,13 +59,15 @@ Check environment variables section.
 3. `docker-compose up -d`.
 
 ( Dockerhub repo => https://hub.docker.com/r/chralp/heyburrito  )
-### Node
+### Node (Local Development)
 1. `git clone git@github.com:chralp/heyburrito.git`
 2. `cd heyburrito`
 3. `npm install`
 4. `cp .env.example .env`
-5. Set environment variables that you need / want. Check "Environment variables" for more details.
-6. `npm run start`
+5. Edit `.env` and set your Slack bot token and signing secret
+6. `npm run dev` (for development with hot reload) or `npm start` (for production)
+
+**Note**: The app defaults to file-based storage in `data/` directory - no database setup required!
 
 
 ### Environment Variables
@@ -112,7 +83,7 @@ Check environment variables section.
 | SLACK_API_TOKEN     |                                            | Yes      | Bot User OAuth Token from Slack app (starts with xoxb-)          |
 | SLACK_SIGNING_SECRET |                                           | Yes      | Signing Secret from Slack app for webhook verification           |
 | SLACK_EMOJI_INC     | :burrito:                                  | No       | Emoji to increment points. ex:( :burrito: )                       |
-| SLACK_EMOJI_DEC     | :rottenburrito:                            | No       | Emoji to decrement points. ex:( :rottenburrito: )                 |
+| SLACK_EMOJI_DEC     | :thumbsdown:                               | No       | Emoji to decrement points. ex:( :thumbsdown: )                    |
 | SLACK_DAILY_CAP     | 5                                          | No       | Defaults to 5/day .                                               |
 | SLACK_DAILY_DEC_CAP | 5                                          | No       | separate cap ONLY IF env ENABLE_DECREMENT is set to false.        |
 | DISABLE_EMOJI_DEC   | false                                      | No       | Disable rottenburrito completely, set true to disable             |

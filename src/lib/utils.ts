@@ -8,11 +8,34 @@ const themeRootPath: string = `${root}www/themes/`;
 const defaultTheme: string = 'https://github.com/chralp/heyburrito-theme';
 
 
-const time = () => {
+const time = (period: string = 'day') => {
+    const now = new Date();
     const start = new Date();
     const end = new Date();
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999);
+
+    switch (period) {
+        case 'day':
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+            break;
+        case 'week':
+            const dayOfWeek = now.getDay();
+            const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Monday start
+            start.setDate(now.getDate() - daysToSubtract);
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+            break;
+        case 'month':
+            start.setDate(1);
+            start.setHours(0, 0, 0, 0);
+            end.setMonth(end.getMonth() + 1, 0); // Last day of current month
+            end.setHours(23, 59, 59, 999);
+            break;
+        default:
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+    }
+
     return {
         start,
         end,

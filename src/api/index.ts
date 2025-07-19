@@ -73,8 +73,16 @@ Route.add({
     handler: async (request: any, res: any) => {
         try {
             const { listType, scoreTypeInput } = request.params;
+            
+            // Parse query parameters from URL
+            const urlParts = request.url.split('?');
+            const queryParams = new URLSearchParams(urlParts[1] || '');
+            const period = queryParams.get('period'); // day, week, month
+            const limitParam = queryParams.get('limit');
+            const limit = limitParam ? parseInt(limitParam, 10) : undefined;
 
-            const scoreType = scoreTypeInput || 'inc';
+            // Clean scoreTypeInput in case it includes query parameters
+            const scoreType = (scoreTypeInput || 'inc').split('?')[0];
 
             if (!ALLOWED_LISTTYPES.includes(listType)) {
                 throw ({
@@ -90,7 +98,14 @@ Route.add({
                 });
             }
 
-            const score = await getScoreBoard(listType, scoreType);
+            if (period && !['day', 'week', 'month'].includes(period)) {
+                throw ({
+                    message: 'Allowed period values are day, week, month',
+                    code: 400,
+                });
+            }
+
+            const score = await getScoreBoard(listType, scoreType, period, limit);
 
             const data = {
                 error: false,

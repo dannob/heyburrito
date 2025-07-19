@@ -14,11 +14,13 @@ const {
  */
 
 /**
- * @param {string} scoretype - inc / dec
  * @param {string} listType - to / from
+ * @param {string} scoreType - inc / dec
+ * @param {string} period - day / week / month (optional)
+ * @param {number} limit - max number of results (optional)
  */
-const getScoreBoard = async (listType: string, scoreType: string) => {
-    const data = await BurritoStore.getScoreBoard({ listType, scoreType });
+const getScoreBoard = async (listType: string, scoreType: string, period?: string, limit?: number) => {
+    const data = await BurritoStore.getScoreBoard({ listType, scoreType, period });
     const score = [];
     const uniqueUsername = [...new Set(data.map((x) => x[listType]))];
 
@@ -54,10 +56,12 @@ const getScoreBoard = async (listType: string, scoreType: string) => {
                 level,
             }
         });
-        return sort(mapper(levelScoreList));
+        let sortedList = sort(mapper(levelScoreList));
+        return limit ? sortedList.slice(0, limit) : sortedList;
     };
 
-    return sort(mapper(scoreList));
+    let sortedList = sort(mapper(scoreList));
+    return limit ? sortedList.slice(0, limit) : sortedList;
 };
 
 const _getUserScoreBoard = async ({ ...args }) => {

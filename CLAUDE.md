@@ -82,7 +82,7 @@ Create a modern Slack app at https://api.slack.com/apps with these requirements:
 - **Bot Scopes**: `channels:history`, `chat:write`, `users:read`, `app_mentions:read`
 - **Event Subscriptions**: Enable with endpoint `https://your-domain/slack/events`
 - **Bot Events**: Subscribe to `message.channels` and `app_mention`
-- **App Manifest**: See README.md for complete manifest configuration
+- **App Manifest**: Use `slack-app-manifest.json` for easy Slack app creation
 
 ## Testing
 
