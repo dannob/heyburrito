@@ -17,10 +17,12 @@ export default async () => {
     }
     log.debug('=====================');
     await themeHandler();
-    // check if database is file
-    if (config.db.db_driver === 'file') {
-        log.info('Database driver is file');
-
+    
+    // Log the database driver being used
+    log.info(`Database driver is ${config.db.db_driver}`);
+    
+    // check if database needs file path (file or sqlite)
+    if (config.db.db_driver === 'file' || config.db.db_driver === 'sqlite') {
         // Check if path exists
         if (!pathExists(config.db.db_path)) {
             log.debug('Database path does not exists');

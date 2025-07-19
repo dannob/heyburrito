@@ -10,6 +10,7 @@ declare module '@slack/web-api';
 declare module 'ws';
 declare module 'git-clone-repo';
 declare module 'http';
+declare module 'better-sqlite3';
 
 // For tests
 declare module 'chai';

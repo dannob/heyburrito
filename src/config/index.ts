@@ -10,7 +10,6 @@ import {
     getThemeName
 } from '../lib/utils';
 
-
 const isFalse = (input: string) => (input === 'false' || input === 'no' || input === '0');
 const isTrue = (input: string) => (input === 'true' || input === 'yes' || input === '1');
 
@@ -39,8 +38,8 @@ export function getNum(inputKey: string, defaultValue: number): number {
 const config = {
     production: {
         db: {
-            db_driver: process.env.DATABASE_DRIVER || 'file',
-            db_fileName: 'burrito-prod.db',
+            db_driver: process.env.DATABASE_DRIVER || 'sqlite',
+            db_fileName: (process.env.DATABASE_DRIVER || 'sqlite') === 'sqlite' ? 'burrito-prod.sqlite' : 'burrito-prod.db',
             db_path: process.env.DATABASE_PATH || `${root}data/`,
             db_url: (process.env.DATABASE_DRIVER === 'mongodb') ? mustHave('MONGODB_URL') : '',
             db_name: (process.env.DATABASE_DRIVER === 'mongodb') ? mustHave('MONGODB_DATABASE') : '',
@@ -81,8 +80,9 @@ const config = {
     },
     development: {
         db: {
-            db_driver: process.env.DATABASE_DRIVER || 'file',
-            db_fileName: 'burrito-dev.db',
+            db_driver: process.env.DATABASE_DRIVER || 'sqlite',
+            db_fileName: (process.env.DATABASE_DRIVER || 'sqlite') === 'sqlite' ? 'burrito-dev.sqlite' : 'burrito-dev.db',
+            _config_version: 'SQLITE_UPDATE_V2',
             db_path: process.env.DATABASE_PATH || `${root}data/`,
             db_url: (process.env.DATABASE_DRIVER === 'mongodb') ? mustHave('MONGODB_URL') : '',
             db_name: (process.env.DATABASE_DRIVER === 'mongodb') ? mustHave('MONGODB_DATABASE') : '',

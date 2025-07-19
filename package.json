@@ -14,6 +14,8 @@
   "license": "MIT",
   "dependencies": {
     "@slack/web-api": "^7.9.3",
+    "@types/better-sqlite3": "^7.6.13",
+    "better-sqlite3": "^12.2.0",
     "bog": "^1.0.2",
     "dotenv": "^6.0.0",
     "mongodb": "^3.4.0",
